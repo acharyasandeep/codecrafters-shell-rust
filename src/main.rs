@@ -6,6 +6,14 @@ fn handle_commands(input: String) {
     let command = input_split[0].trim();
 
     match command {
+        "exit" => {
+            if input_split.len() < 2 {
+                panic!("exit code not supplied");
+            }
+            let exit_code = input_split[1];
+            let exit_code: i32 = exit_code.parse().unwrap_or_default();
+            std::process::exit(exit_code);
+        }
         "" => {}
         _ => {
             println!("{}: command not found", command);
