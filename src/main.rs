@@ -1,6 +1,8 @@
 #[allow(unused_imports)]
 use std::io::{self, Write};
 
+const SHELL_BUILTINS: [&str; 3] = ["exit", "echo", "type"];
+
 fn handle_commands(input: String) {
     let input_split: Vec<_> = input.split(" ").collect();
     let command = input_split[0].trim();
@@ -20,6 +22,18 @@ fn handle_commands(input: String) {
                 string_to_print = input_split[1..].join(" ").trim().to_string();
             }
             println!("{}", string_to_print);
+        }
+        "type" => {
+            if input_split.len() < 2 {
+                panic!("exit code not supplied");
+            }
+
+            let arg = input_split[1].trim();
+            if SHELL_BUILTINS.contains(&arg) {
+                println!("{} is a shell-builtin", arg);
+            } else {
+                println!("{}: not found", arg);
+            }
         }
         "" => {}
         _ => {
