@@ -14,6 +14,13 @@ fn handle_commands(input: String) {
             let exit_code: i32 = exit_code.parse().unwrap_or_default();
             std::process::exit(exit_code);
         }
+        "echo" => {
+            let mut string_to_print = String::from("");
+            if input_split.len() >= 2 {
+                string_to_print = input_split[1..].join(" ").trim().to_string();
+            }
+            println!("{}", string_to_print);
+        }
         "" => {}
         _ => {
             println!("{}: command not found", command);
