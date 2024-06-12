@@ -30,7 +30,7 @@ fn handle_commands(input: String) {
 
             let arg = input_split[1].trim();
             if SHELL_BUILTINS.contains(&arg) {
-                println!("{} is a shell-builtin", arg);
+                println!("{} is a shell builtin", arg);
             } else {
                 println!("{}: not found", arg);
             }
