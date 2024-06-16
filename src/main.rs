@@ -1,7 +1,41 @@
 #[allow(unused_imports)]
 use std::io::{self, Write};
+use std::{env, fs};
 
 const SHELL_BUILTINS: [&str; 3] = ["exit", "echo", "type"];
+
+fn check_executable(command: String) -> (bool, String) {
+    let search_directories = env::var("PATH").unwrap();
+    let search_directories: Vec<_> = search_directories.split(":").collect();
+    let (mut is_executable, mut path_to_executable) = (false, String::from(""));
+
+    for mut directory in search_directories {
+        directory = directory.trim();
+        let all_files = fs::read_dir(directory);
+
+        match all_files {
+            Ok(_all_files) => {
+                let files: Vec<_> = _all_files.collect();
+                for file in files {
+                    let file = file.unwrap();
+                    let file_name = file.file_name().into_string().unwrap();
+                    if command == file_name {
+                        is_executable = true;
+                        let file_path_clone = file.path().clone();
+                        let path_to_executable_str = file_path_clone.to_str().unwrap();
+                        path_to_executable = path_to_executable_str.to_string();
+                        break;
+                    }
+                }
+            }
+            Err(e) => {
+                println!("can't read {}, error: {:?}", directory, e)
+            }
+        }
+    }
+
+    return (is_executable, path_to_executable);
+}
 
 fn handle_commands(input: String) {
     let input_split: Vec<_> = input.split(" ").collect();
@@ -32,7 +66,12 @@ fn handle_commands(input: String) {
             if SHELL_BUILTINS.contains(&arg) {
                 println!("{} is a shell builtin", arg);
             } else {
-                println!("{}: not found", arg);
+                let (is_executable, path_to_executable) = check_executable(arg.to_string());
+                if is_executable {
+                    println!("{} is a {}", arg, path_to_executable);
+                } else {
+                    println!("{}: not found", arg);
+                }
             }
         }
         "" => {}
