@@ -68,7 +68,7 @@ fn handle_commands(input: String) {
             } else {
                 let (is_executable, path_to_executable) = check_executable(arg.to_string());
                 if is_executable {
-                    println!("{} is a {}", arg, path_to_executable);
+                    println!("{} is {}", arg, path_to_executable);
                 } else {
                     println!("{}: not found", arg);
                 }
