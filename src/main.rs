@@ -1,5 +1,6 @@
 #[allow(unused_imports)]
 use std::io::{self, Write};
+use std::process::Command;
 use std::{env, fs};
 
 const SHELL_BUILTINS: [&str; 3] = ["exit", "echo", "type"];
@@ -76,7 +77,29 @@ fn handle_commands(input: String) {
         }
         "" => {}
         _ => {
-            println!("{}: command not found", command);
+            let (is_executable, path_to_executable) = check_executable(command.to_string());
+            if is_executable {
+                let mut args = vec![];
+
+                for i in 1..input_split.len() {
+                    args.push(input_split[i].trim());
+                }
+
+                let output = Command::new(path_to_executable)
+                    .args(args)
+                    .output()
+                    .expect("can't execute command");
+                let error = String::from_utf8_lossy(&output.stderr);
+                let output = String::from_utf8_lossy(&output.stdout);
+
+                if error.len() > 0 {
+                    print!("{}", error);
+                }
+
+                print!("{}", output);
+            } else {
+                println!("{}: command not found", command);
+            }
         }
     }
 }
