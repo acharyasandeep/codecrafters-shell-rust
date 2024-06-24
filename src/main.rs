@@ -3,7 +3,7 @@ use std::io::{self, Write};
 use std::process::Command;
 use std::{env, fs};
 
-const SHELL_BUILTINS: [&str; 3] = ["exit", "echo", "type"];
+const SHELL_BUILTINS: [&str; 4] = ["exit", "echo", "type", "pwd"];
 
 fn check_executable(command: String) -> (bool, String) {
     let search_directories = env::var("PATH").unwrap();
@@ -74,6 +74,11 @@ fn handle_commands(input: String) {
                     println!("{}: not found", arg);
                 }
             }
+        }
+        "pwd" => {
+            let current_dir = env::current_dir().unwrap();
+            let current_dir_str = current_dir.to_string_lossy();
+            println!("{}", current_dir_str);
         }
         "" => {}
         _ => {
