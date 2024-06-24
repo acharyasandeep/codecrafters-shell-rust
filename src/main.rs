@@ -3,7 +3,7 @@ use std::io::{self, Write};
 use std::process::Command;
 use std::{env, fs};
 
-const SHELL_BUILTINS: [&str; 4] = ["exit", "echo", "type", "pwd"];
+const SHELL_BUILTINS: [&str; 5] = ["exit", "echo", "type", "pwd", "cd"];
 
 fn check_executable(command: String) -> (bool, String) {
     let search_directories = env::var("PATH").unwrap();
@@ -60,7 +60,8 @@ fn handle_commands(input: String) {
         }
         "type" => {
             if input_split.len() < 2 {
-                panic!("exit code not supplied");
+                print!("wrong no of arguments; no command to return the type of");
+                return;
             }
 
             let arg = input_split[1].trim();
@@ -79,6 +80,17 @@ fn handle_commands(input: String) {
             let current_dir = env::current_dir().unwrap();
             let current_dir_str = current_dir.to_string_lossy();
             println!("{}", current_dir_str);
+        }
+        "cd" => {
+            if input_split.len() < 2 {
+                println!("wrong number of arguments; no path supplied");
+                return;
+            }
+            let path_to_change = input_split[1].trim();
+            let result = env::set_current_dir(path_to_change);
+            if result.is_err() {
+                println!("cd: {}: No such file or directory", path_to_change);
+            }
         }
         "" => {}
         _ => {
