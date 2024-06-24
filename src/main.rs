@@ -86,8 +86,14 @@ fn handle_commands(input: String) {
                 println!("wrong number of arguments; no path supplied");
                 return;
             }
-            let path_to_change = input_split[1].trim();
-            let result = env::set_current_dir(path_to_change);
+            let mut path_to_change = input_split[1].trim().to_string();
+            if path_to_change == "~" {
+                let home_dir = env::var("HOME");
+                let home_dir = home_dir.unwrap_or_else(|_| panic!("HOME directory not set"));
+                path_to_change = home_dir
+            }
+
+            let result = env::set_current_dir(&path_to_change);
             if result.is_err() {
                 println!("cd: {}: No such file or directory", path_to_change);
             }
